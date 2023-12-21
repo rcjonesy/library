@@ -204,7 +204,32 @@ app.MapPut("/api/patrons/{id}/deactivate", (LoncotesLibraryDbContext db, int id)
     }
     catch (DbUpdateException)
     {
-        return Results.BadRequest("Failed to update material status");
+        return Results.BadRequest("Failed to update patron status");
+    }
+
+});
+
+//----------------------------------------------------------------
+
+app.MapPut("/api/patrons/{id}/activate", (LoncotesLibraryDbContext db, int id) =>
+{
+    var patronToUpdate = db.Patrons.FirstOrDefault(p => p.Id == id);
+
+    if (patronToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+
+    patronToUpdate.IsActive = true;
+
+    try
+    {
+        db.SaveChanges();
+        return Results.NoContent(); // Successfully updated
+    }
+    catch (DbUpdateException)
+    {
+        return Results.BadRequest("Failed to update patron status");
     }
 
 });
